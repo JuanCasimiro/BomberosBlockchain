@@ -1,2 +1,3 @@
 # NFTMintPage
-Pagina de minteo para coleccion NFT
+Pagina de donaciones web3 para bomberos
+
