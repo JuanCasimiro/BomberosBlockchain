@@ -1,85 +1,106 @@
-import Lock_ABI from "./Lock_ABI.json";
+import Firefighter_ABI from "./Lock_ABI.json";
 import { BrowserProvider, Contract, parseEther, formatEther, ethers } from "ethers";
 import { CONTRACT_ADDRESS } from "./constants";
 
-// Module-level variables to store provider, signer, and contract
 let provider;
 let signer;
 let contract;
-const PRICE = 0.05; // Precio fijo por token
 
-// Function to initialize the provider, signer, and contract
 const initialize = async () => {
   if (typeof window.ethereum !== "undefined") {
     provider = new BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
-    contract = new Contract(CONTRACT_ADDRESS, Lock_ABI, signer);
+    contract = new Contract(CONTRACT_ADDRESS, Firefighter_ABI, signer);
   } else {
     console.error("Please install MetaMask!");
   }
 };
 
-// Initialize once when the module is loaded
 initialize();
 
-// Function to request single account
 export const requestAccount = async () => {
   try {
     const accounts = await provider.send("eth_requestAccounts", []);
-    return accounts[0]; // Return the first account
+    return accounts[0];
   } catch (error) {
     console.error("Error requesting account:", error.message);
     return null;
   }
 };
 
-// Function to get contract balance in ETH
-export const getContractBalanceInETH = async () => {
-  const balanceWei = await provider.getBalance(CONTRACT_ADDRESS);
-  const balanceEth = formatEther(balanceWei); // Convert Wei to ETH string
-  return balanceEth; // Convert ETH string to number
-};
-// Function to get contract balance in ETH
-export const mint = async (mintQuantity) => {
+export const createCampaign = async (title, description, goal, duration) => {
   try {
-    const value = ethers.parseEther((PRICE * mintQuantity).toString()); // Precio fijo por token
-    const tx = await contract.mintRandom({ value });
-
-    await tx.wait(); 
-    setIsMinting(false);
+    const tx = await contract.createCampaign(title, description, parseEther(goal), duration);
+    await tx.wait();
+    return true;
   } catch (error) {
-    console.error("Error minting nft:", error.message);
+    console.error("Error creating campaign:", error.message);
+    return false;
+  }
+};
+
+export const contribute = async (campaignId, amount) => {
+  try {
+    const tx = await contract.contribute(campaignId, { value: parseEther(amount) });
+    await tx.wait();
+    return true;
+  } catch (error) {
+    console.error("Error contributing:", error.message);
+    return false;
+  }
+};
+
+export const getCampaign = async (campaignId) => {
+  try {
+    const campaign = await contract.getCampaign(campaignId);
+    return {
+      creator: campaign[0],
+      title: campaign[1],
+      description: campaign[2],
+      goal: formatEther(campaign[3]),
+      deadline: campaign[4].toNumber(),
+      fundsRaised: formatEther(campaign[5]),
+      withdrawn: campaign[6],
+    };
+  } catch (error) {
+    console.error("Error getting campaign:", error.message);
     return null;
   }
 };
 
-// Función para obtener el saldo de una cuenta específica en ETH
-export const getAccountBalance = async (account) => {
+export const getCampaigns = async () => {
   try {
-    const balanceWei = await provider.getBalance(account);
-    const balanceEth = formatEther(balanceWei);
-    return balanceEth; // Devolver el balance en ETH
+    const campaignIds = await contract.getCampaigns(); // Llamada a la función del contrato
+    return campaignIds;
   } catch (error) {
-    console.error("Error getting account balance:", error.message);
-    return null;
+    console.error("Error getting campaigns:", error.message);
+    return [];
   }
 };
 
-// Function to deposit funds to the contract
-export const depositFund = async (depositValue) => {
-  const ethValue = parseEther(depositValue);
-  const deposit = await contract.deposit({ value: ethValue });
-  await deposit.wait();
+
+export const withdrawFunds = async (campaignId) => {
+  try {
+    const tx = await contract.withdrawFunds(campaignId);
+    await tx.wait();
+    return true;
+  } catch (error) {
+    console.error("Error withdrawing funds:", error.message);
+    return false;
+  }
 };
 
-// Function to withdraw funds from the contract
-export const withdrawFund = async () => {
-  const withdrawTx = await contract.withdraw();
-  await withdrawTx.wait();
-  console.log("Withdrawal successful!");
+export const refund = async (campaignId) => {
+  try {
+    const tx = await contract.refund(campaignId);
+    await tx.wait();
+    return true;
+  } catch (error) {
+    console.error("Error requesting refund:", error.message);
+    return false;
+  }
 };
 
-// Función para obtener los IDs de los NFTs minteados
 export const getMintedTokens = async () => {
   try {
     const mintedTokens = await contract.getMintedTokens();
