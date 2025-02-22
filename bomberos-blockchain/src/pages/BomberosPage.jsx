@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaEthereum, FaFireExtinguisher, FaWallet, FaHandHoldingHeart, FaBars, FaTimes } from "react-icons/fa";
 import { ethers } from "ethers";
-import { requestAccount} from "../utils/contractServices";
+import { requestAccount, getCampaign, getCampaigns, contribute, refund} from "../utils/contractServices";
 
 const HomePage = () => {
   const [isWeb3Enabled, setIsWeb3Enabled] = useState(false);
   const [account, setAccount] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [campaigns, setCampaigns] = useState([]);
+  const campaignsRef = useRef(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [donationAmount, setDonationAmount] = useState("");
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+
 
   const connectWallet = async () => {
     try {
@@ -18,32 +24,87 @@ const HomePage = () => {
     }
   };
 
-  const [campaigns, setCampaigns] = useState([
+  const campaignDataHardcode = [
     {
       id: 1,
-      stationName: "Estación 23 - Centro",
-      image: "https://images.unsplash.com/photo-1599171571332-3de25555105e",
+      title: "Estación 23 - Centro",
+      description: "Actualización de equipamiento esencial",
       goal: 25,
-      raised: 15,
-      description: "Actualización de equipamiento esencial"
+      fundsRaised: 15,
+      deadline: 1678000000, // Usar una fecha en formato UNIX
+      withdrawn: false,
+      image: "https://images.unsplash.com/photo-1599171571332-3de25555105e" // Imagen de ejemplo
     },
     {
       id: 2,
-      stationName: "Estación 45 - Riverside",
-      image: "https://images.unsplash.com/photo-1563604437105-d5b760c8a1dd",
+      title: "Estación 45 - Riverside",
+      description: "Financiamiento para nuevo vehículo de rescate",
       goal: 40,
-      raised: 28,
-      description: "Financiamiento para nuevo vehículo de rescate"
+      fundsRaised: 28,
+      deadline: 1679000000,
+      withdrawn: false,
+      image: "https://images.unsplash.com/photo-1563604437105-d5b760c8a1dd"
     },
     {
       id: 3,
-      stationName: "Estación 12 - Highland",
-      image: "https://images.unsplash.com/photo-1617973097554-506592450d3e",
+      title: "Estación 12 - Highland",
+      description: "Equipo de respuesta a emergencias",
       goal: 30,
-      raised: 20,
-      description: "Equipo de respuesta a emergencias"
+      fundsRaised: 20,
+      deadline: 1680000000,
+      withdrawn: false,
+      image: "https://images.unsplash.com/photo-1617973097554-506592450d3e"
     }
-  ]);
+  ];  
+
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const campaignIds = await getCampaigns();
+        const campaignData = await Promise.all(campaignIds.map(id => getCampaign(id)));
+        setCampaigns(campaignData);
+      } catch (error) {
+        console.error("Error fetching campaigns:", error);
+      }
+    };
+
+    //fetchCampaigns();
+
+    setCampaigns(campaignDataHardcode);
+  }, []);
+
+  const handleRefund = async (campaignId) => {
+    const success = await refund(campaignId);
+    if (success) {
+      alert("Reembolso solicitado con éxito");
+    } else {
+      alert("Error en la solicitud de reembolso");
+    }
+  };
+
+  const handleContribute = async (campaignId, amount) => {
+    if (!amount || isNaN(amount) || amount <= 0) {
+      alert("Ingresa una cantidad válida de ETH");
+      return;
+    }
+    const success = await contribute(campaignId, amount);
+    if (success) {
+      alert("Contribución realizada con éxito");
+    } else {
+      alert("Error en la contribución");
+    }
+  };
+
+  const openModal = (campaign) => {
+    setSelectedCampaign(campaign);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setDonationAmount("");
+  };
+  
 
   const Navigation = () => (
     <nav className="bg-gray-900 fixed w-full z-50 top-0">
@@ -85,8 +146,6 @@ const HomePage = () => {
     </nav>
   );
 
-  const campaignsRef = useRef(null);
-
   const scrollToCampaigns = () => {
     campaignsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -124,33 +183,37 @@ const HomePage = () => {
   const CampaignCard = ({ campaign }) => (
     <div className="bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl">
       <img
-        src={campaign.image}
-        alt={campaign.stationName}
+        src={campaign.image || "https://via.placeholder.com/300"} // Agrega una imagen por defecto si no hay imagen
+        alt={campaign.title}
         className="w-full h-48 object-cover"
       />
       <div className="p-6">
         <h3 className="text-xl font-bold text-gray-900 mb-2">
-          {campaign.stationName}
+          {campaign.title}
         </h3>
         <p className="text-gray-600 mb-4">{campaign.description}</p>
         <div className="mb-4">
           <div className="flex justify-between text-sm mb-1">
-            <span>{campaign.raised} ETH recaudados</span>
+            <span>{campaign.fundsRaised} ETH recaudados</span>
             <span>{campaign.goal} ETH objetivo</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-red-600 rounded-full h-2"
-              style={{ width: `${(campaign.raised / campaign.goal) * 100}%` }}
+              style={{ width: `${(campaign.fundsRaised / campaign.goal) * 100}%` }}
             ></div>
           </div>
         </div>
-        <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center">
+        <button
+          onClick={() => openModal(campaign)} // Usar openModal con la campaña completa
+          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center"
+        >
           <FaEthereum className="mr-2" /> Donar Ahora
         </button>
       </div>
     </div>
   );
+  
 
   const HowItWorks = () => (
     <div className="bg-gray-50 py-16">
@@ -187,7 +250,6 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-        <div class="bg-red-500 text-white p-4">Si ves esto en rojo, Tailwind funciona.</div>
 
       <Navigation />
       <HeroSection />
@@ -202,6 +264,35 @@ const HomePage = () => {
         </div>
       </div>
       <HowItWorks />
+
+      {isModalOpen && selectedCampaign && (
+      <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+          <h3 className="text-xl font-bold mb-4">Donar a {selectedCampaign.stationName}</h3>
+          <input
+            type="number"
+            value={donationAmount}
+            onChange={(e) => setDonationAmount(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-lg mb-4"
+            placeholder="Ingresa la cantidad (ETH)"
+          />
+          <div className="flex justify-between">
+            <button
+              onClick={() => handleContribute(selectedCampaign.id, donationAmount)}
+              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg"
+            >
+              Contribuir
+            </button>
+            <button
+              onClick={closeModal}
+              className="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-lg"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+      )}
     </div>
   );
 };
