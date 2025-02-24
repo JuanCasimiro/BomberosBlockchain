@@ -15,13 +15,20 @@ Plataforma de Donaciones Blockchain para Bomberos que garantiza transparencia, s
 - [Seguridad y Transparencia](#seguridad-y-transparencia)
 - [Impacto y Beneficios para la Comunidad](#impacto-y-beneficios-para-la-comunidad)
 - [Futuro y Roadmap](#futuro-y-roadmap)
-- [Conclusión](#conclusión)
+- [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Instalación y Ejecución](#instalación-y-ejecución)
+- [Demo y Capturas de Pantalla](#demo-y-capturas-de-pantalla)
+- [Guía de Uso y Casos de Uso](#guía-de-uso-y-casos-de-uso)
+- [Contribuciones](#contribuciones)
+- [Licencia](#licencia)
+- [Contacto y Redes](#contacto-y-redes)
+- [Notas Adicionales y Agradecimientos](#notas-adicionales-y-agradecimientos)
 
 ---
 
 ## Resumen
 
-La plataforma utiliza tecnología blockchain para gestionar campañas de crowdfunding de forma descentralizada y transparente. A través de contratos inteligentes, se asegura que cada donación se registre de manera inmutable y se utilicen mecanismos automatizados para el retiro de fondos o reembolsos, según el resultado de cada campaña. Además, se premia a los donantes con tokens NFT que reconocen su compromiso y contribución acumulativa.
+La plataforma utiliza tecnología blockchain para gestionar campañas de crowdfunding de forma descentralizada y transparente. A través de contratos inteligentes, se asegura que cada donación se registre de manera inmutable y se utilicen mecanismos automatizados para el retiro de fondos o reembolsos, según el resultado de cada campaña. Además, se premia a los donantes con tokens NFT que reconocen su compromiso y contribución acumulativa. **Cabe destacar que el NFT se emite no solo al alcanzar una donación única significativa, sino también al acumular aportes recurrentes que superen un umbral predefinido.**
 
 ---
 
@@ -43,7 +50,7 @@ Los bomberos enfrentan riesgos constantes y requieren recursos para equipamiento
 
 - **Registro Inmutable:** Toda transacción se almacena en la blockchain, facilitando auditorías.
 - **Automatización:** Los contratos inteligentes automatizan el retiro y reembolso de fondos.
-- **Reconocimiento:** La emisión de NFTs recompensa tanto donaciones únicas como contribuciones acumulativas, incentivando la participación continua.
+- **Reconocimiento Integral:** La emisión de NFTs recompensa tanto donaciones únicas como contribuciones acumulativas, incentivando la participación continua.
 
 ---
 
@@ -51,8 +58,8 @@ Los bomberos enfrentan riesgos constantes y requieren recursos para equipamiento
 
 La plataforma se basa en un contrato inteligente desarrollado en Solidity, apoyándose en librerías de OpenZeppelin para garantizar robustez y seguridad. Los componentes clave incluyen:
 
-- **Campañas de Donación:** Definidas por estructura que contiene el creador, objetivo financiero, plazos de contribución y un periodo adicional de 15 días para reembolsos o retiros.
-- **Registro de Contribuciones:** Se almacena el monto total aportado por cada donante en cada campaña.
+- **Campañas de Donación:** Estructuras que contienen el creador, objetivo financiero, plazos de contribución y un periodo adicional de 15 días para reembolsos o retiros.
+- **Registro de Contribuciones:** Almacenamiento del monto total aportado por cada donante en cada campaña.
 - **Sistema de Whitelist:** Solo usuarios autorizados pueden crear campañas.
 - **Mecanismos Automatizados:** Funciones para contribuir, retirar fondos o solicitar reembolsos, y emisión de NFTs cuando se cumplen los criterios establecidos.
 
@@ -125,12 +132,105 @@ Crear una red colaborativa que conecte a comunidades, organizaciones y gobiernos
 
 ---
 
-## Conclusión
+## Tecnologías Utilizadas
 
-La plataforma de donaciones blockchain para bomberos representa un avance significativo en la forma de recaudar y gestionar fondos para emergencias. Al combinar la transparencia de la blockchain, la automatización de contratos inteligentes y un innovador sistema de incentivos basado en NFTs, se fomenta un compromiso sólido y continuo con quienes arriesgan sus vidas para proteger a la sociedad.
-
-Con esta solución, se sientan las bases para un sistema más confiable, eficiente y participativo en el apoyo a las causas de emergencia.
+- **Lenguaje:** Solidity (v0.8.19)
+- **Frameworks/Libs:** OpenZeppelin Contracts, Hardhat/Truffle (para testing y despliegue)
+- **Frontend (si aplica):** React, Next.js, Ethers.js
+- **Blockchain:** Ethereum (Testnet/Mainnet)
+- **Herramientas:** MetaMask, Ganache
 
 ---
 
-*Para más detalles sobre el contrato inteligente y la implementación técnica, consulte la documentación completa incluida en este repositorio.*
+## Instalación y Ejecución
+
+```bash
+# Clona el repositorio
+git clone https://github.com/tuusuario/firefighter-crowdfunding.git
+cd firefighter-crowdfunding
+
+# Instala las dependencias
+npm install
+
+# Compila el contrato
+npx hardhat compile
+
+# Ejecuta los tests
+npx hardhat test
+
+# Despliega en una red local (ejemplo: Hardhat Network)
+npx hardhat run scripts/deploy.js --network localhost
+
+
+## Demo y Capturas de Pantalla
+
+Si deseas ver la plataforma en acción, visita la demo en vivo o revisa las capturas de pantalla:
+
+- [Ver Demo en Vivo](https://bomberos-blockchain.vercel.app/)
+
+---
+
+## Guía de Uso y Casos de Uso
+
+### Creación de Campañas
+
+- **Usuarios Autorizados:**  
+  Solo aquellos en whitelist pueden crear campañas.
+
+- **Definición de la Campaña:**  
+  El usuario define título, descripción, meta de recaudación y duración.
+
+- **Período Adicional:**  
+  Se establece un periodo extra de 15 días para gestionar retiros o reembolsos.
+
+### Contribución
+
+- **Donaciones:**  
+  Los usuarios pueden contribuir a las campañas activas.
+
+- **Registro de Aportes:**  
+  Se suma el monto de cada donante y, al superar el umbral acumulado, se emite un NFT.
+
+### Retiro y Reembolso
+
+- **Retiro:**  
+  Si la campaña es exitosa y alcanza la meta, el creador retira los fondos tras el cierre del período.
+
+- **Reembolso:**  
+  Si no se alcanza la meta, los donantes pueden solicitar el reembolso durante el periodo establecido.
+
+---
+
+## Contribuciones
+
+Si deseas contribuir a este proyecto:
+
+1. Realiza un fork del repositorio.
+2. Crea una nueva rama para tu feature o bug fix.
+3. Envía un pull request con una descripción detallada de los cambios.
+4. Abre un issue si tienes dudas o sugerencias.
+
+---
+
+## Licencia
+
+Este proyecto se distribuye bajo la licencia MIT. Consulta el archivo [LICENSE](./LICENSE) para más detalles.
+
+---
+
+## Contacto y Redes
+
+- **Email:** tuemail@ejemplo.com
+- **GitHub:** [JuanCasimiro](https://github.com/JuanCasimiro)
+- **LinkedIn:** [JuanCasimiro](https://linkedin.com/in/JuanCasimiro)
+
+---
+
+## Notas Adicionales y Agradecimientos
+
+- **Notas:**  
+  - El NFT se emite no solo por una donación única, sino también al acumular contribuciones que superen el umbral establecido.
+  - Se agradece a la comunidad de OpenZeppelin por sus excelentes herramientas y documentación.
+
+- **Agradecimientos:**  
+  Gracias a todos los colaboradores y a la comunidad Web3 por el apoyo y feedback constante.
