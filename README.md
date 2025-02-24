@@ -142,26 +142,6 @@ Crear una red colaborativa que conecte a comunidades, organizaciones y gobiernos
 
 ---
 
-## Instalación y Ejecución
-
-```bash
-# Clona el repositorio
-git clone https://github.com/tuusuario/firefighter-crowdfunding.git
-cd firefighter-crowdfunding
-
-# Instala las dependencias
-npm install
-
-# Compila el contrato
-npx hardhat compile
-
-# Ejecuta los tests
-npx hardhat test
-
-# Despliega en una red local (ejemplo: Hardhat Network)
-npx hardhat run scripts/deploy.js --network localhost
-
-
 ## Demo y Capturas de Pantalla
 
 Si deseas ver la plataforma en acción, visita la demo en vivo o revisa las capturas de pantalla:
