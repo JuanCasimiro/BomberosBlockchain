@@ -6,20 +6,24 @@ let provider;
 let signer;
 let contract;
 
-const initialize = async () => {
+export const initialize = async () => {
   if (typeof window.ethereum !== "undefined") {
     provider = new BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
     contract = new Contract(CONTRACT_ADDRESS, Firefighter_ABI, signer);
+
+    await provider.getNetwork().then(network => {
+      console.log("Conectado a la red:", network.name);  // Debería decir 'sepolia'
+    });
   } else {
     console.error("Please install MetaMask!");
   }
-  provider.getNetwork().then(network => {
-    console.log("Conectado a la red:", network.name);  // Debería decir 'sepolia'
-  });
 };
 
-initialize();
+// Llamar a `initialize` y esperar a que termine antes de continuar
+initialize().then(() => {
+  console.log("Web3 inicializado correctamente");
+});
 
 export const isWeb3Connected = () => {
   return provider && contract;
@@ -118,5 +122,12 @@ export const getMintedTokens = async () => {
   } catch (error) {
     console.error("Error getting minted tokens:", error.message);
     return [];
+  }
+};
+
+// Nueva función para escuchar cambios en la cuenta
+export const onAccountChange = (callback) => {
+  if (window.ethereum) {
+    window.ethereum.on('accountsChanged', callback);
   }
 };
