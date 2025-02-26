@@ -14,9 +14,16 @@ const initialize = async () => {
   } else {
     console.error("Please install MetaMask!");
   }
+  provider.getNetwork().then(network => {
+    console.log("Conectado a la red:", network.name);  // Debería decir 'sepolia'
+  });
 };
 
 initialize();
+
+export const isWeb3Connected = () => {
+  return provider && contract;
+};
 
 export const requestAccount = async () => {
   try {
@@ -53,14 +60,17 @@ export const contribute = async (campaignId, amount) => {
 export const getCampaign = async (campaignId) => {
   try {
     const campaign = await contract.getCampaign(campaignId);
+    console.log("Campaign:", campaign);
+
     return {
-      creator: campaign[0],
-      title: campaign[1],
-      description: campaign[2],
-      goal: formatEther(campaign[3]),
-      deadline: campaign[4].toNumber(),
-      fundsRaised: formatEther(campaign[5]),
-      withdrawn: campaign[6],
+      id: campaign[0],
+      creator: campaign[1],
+      title: campaign[2],
+      description: campaign[3],
+      goal: formatEther(campaign[4]),
+      deadline: campaign[5], // No es necesario verificar si es BigNumber
+      fundsRaised: formatEther(campaign[6]),
+      withdrawn: campaign[7],
     };
   } catch (error) {
     console.error("Error getting campaign:", error.message);
@@ -70,14 +80,14 @@ export const getCampaign = async (campaignId) => {
 
 export const getCampaigns = async () => {
   try {
-    const campaignIds = await contract.getCampaigns(); // Llamada a la función del contrato
+    const campaignIds = Array.from(await contract.getCampaigns()); // Llamada a la función del contrato
+    console.log("Campaigns:", campaignIds);
     return campaignIds;
   } catch (error) {
     console.error("Error getting campaigns:", error.message);
     return [];
   }
 };
-
 
 export const withdrawFunds = async (campaignId) => {
   try {

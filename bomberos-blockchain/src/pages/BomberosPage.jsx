@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaEthereum, FaFireExtinguisher, FaWallet, FaHandHoldingHeart, FaBars, FaTimes } from "react-icons/fa";
 import { ethers } from "ethers";
 import CampaignCard from "../components/CampaignCard";
-import { requestAccount, getCampaign, getCampaigns, contribute, refund, createCampaign } from "../utils/contractServices";
+import { requestAccount, getCampaign, getCampaigns, contribute, refund, createCampaign, isWeb3Connected } from "../utils/contractServices";
 import Navigation from "../components/Navigation";
 import HeroSection from "../components/HeroSection";
 import CreateCampaignPanel from "../components/CreateCampaignPanel"; // Import the CreateCampaignPanel component
@@ -16,7 +16,6 @@ const HomePage = ({ isCreateCampaignOpen, setIsCreateCampaignOpen }) => {
 
   const campaignDataHardcode = [
     {
-      id: 1,
       title: "Estación 23 - Centro",
       description: "Actualización de equipamiento esencial",
       goal: 25,
@@ -26,7 +25,6 @@ const HomePage = ({ isCreateCampaignOpen, setIsCreateCampaignOpen }) => {
       image: "https://images.unsplash.com/photo-1599171571332-3de25555105e" // Imagen de ejemplo
     },
     {
-      id: 2,
       title: "Estación 45 - Riverside",
       description: "Financiamiento para nuevo vehículo de rescate",
       goal: 40,
@@ -36,7 +34,6 @@ const HomePage = ({ isCreateCampaignOpen, setIsCreateCampaignOpen }) => {
       image: "https://images.unsplash.com/photo-1563604437105-d5b760c8a1dd"
     },
     {
-      id: 3,
       title: "Estación 12 - Highland",
       description: "Equipo de respuesta a emergencias",
       goal: 30,
@@ -50,18 +47,24 @@ const HomePage = ({ isCreateCampaignOpen, setIsCreateCampaignOpen }) => {
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        const campaignIds = await getCampaigns();
-        const campaignData = await Promise.all(campaignIds.map(id => getCampaign(id)));
-        setCampaigns(campaignData);
+        if (isWeb3Connected()) {
+          let campaignIds = await getCampaigns();
+          campaignIds = campaignIds.map(id => Number(id));
+          console.log(campaignIds);
+          const campaignData = await Promise.all(campaignIds.map(id => getCampaign(id)));
+          setCampaigns(campaignData);
+        } else {
+          console.error("Web3 provider or contract not initialized");
+        }
       } catch (error) {
         console.error("Error fetching campaigns:", error);
       }
     };
-
-    //fetchCampaigns();
-
-    setCampaigns(campaignDataHardcode);
-  }, []);
+  
+    fetchCampaigns();
+  
+    //setCampaigns(campaignDataHardcode);
+  }, [isWeb3Connected()]);
 
   const handleRefund = async (campaignId) => {
     const success = await refund(campaignId);
@@ -144,8 +147,8 @@ const HomePage = ({ isCreateCampaignOpen, setIsCreateCampaignOpen }) => {
           Campañas Activas
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {campaigns.map((campaign) => (
-            <CampaignCard key={campaign.id} campaign={campaign} openModal={openModal} />
+          {campaigns.map((campaign, index) => (
+            <CampaignCard key={index} campaign={campaign} openModal={openModal} />
           ))}
         </div>
       </div>

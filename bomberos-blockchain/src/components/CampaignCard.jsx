@@ -2,8 +2,11 @@ import React from 'react';
 import { FaEthereum } from 'react-icons/fa';
 
 const CampaignCard = ({ campaign, openModal }) => {
+  // Convertir campaign.deadline a número
+  const deadline = Number(campaign.deadline);
+  
   // Obtener el tiempo restante (en milisegundos)
-  const timeRemaining = campaign.deadline * 1000 - Date.now();
+  const timeRemaining = deadline * 1000 - Date.now();
   
   // Calcular días, horas, minutos
   const daysRemaining = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
