@@ -17,7 +17,7 @@ const TeamPage = () => {
       "description": "Soy desarrollador con experiencia en Web2 y actualmente estudiando desarrollo blockchain. Este proyecto de crowdfunding en blockchain es un test para mi portfolio, diseñado para demostrar cómo la tecnología puede aplicarse a causas reales como el apoyo a bomberos en incendios forestales. Abierto a conectar y siempre interesado en intercambiar ideas y conectar con quienes comparten la visión de construir con tecnología y soluciones de impacto.",
       "email": "juanignaciocasimiro@gmail.com",
       "github": "https://github.com/JuanCasimiro",
-      "linkedin": "https://www.linkedin.com/in/juan-ignacio-casimiro/"
+      "linkedin": "https://www.linkedin.com/in/juanignaciocasimiro/"
     }
     
   ];
