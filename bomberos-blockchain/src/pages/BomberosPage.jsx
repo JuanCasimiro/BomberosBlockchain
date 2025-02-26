@@ -1,40 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { FaWallet, FaFireExtinguisher, FaHandHoldingHeart } from "react-icons/fa";
-import CampaignCard from "../components/CampaignCard";
-import { getCampaign, getCampaigns, contribute, refund, createCampaign, isWeb3Connected, initialize} from "../utils/contractServices";
+import CampaignList from "../components/CampaignList";
+import { contribute, refund, createCampaign } from "../utils/contractServices";
 import HeroSection from "../components/HeroSection";
 import HowItWorks from "../components/HowItWorks";
 import DonationModal from "../components/DonationModal";
 import CreateCampaignModal from "../components/CreateCampaignModal";
 
 const HomePage = ({ account, isCreateCampaignOpen, setIsCreateCampaignOpen }) => {
-  const [campaigns, setCampaigns] = useState([]);
   const campaignsRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [donationAmount, setDonationAmount] = useState("");
   const [selectedCampaign, setSelectedCampaign] = useState(null);
-
-  useEffect(() => {
-    const fetchCampaigns = async () => {
-      console.log("Account changed:", account);
-      try {
-        if (account && !isWeb3Connected()) {
-          await initialize(); // Solo inicializa si aún no está conectado
-        }
-        if (isWeb3Connected()) {
-          const campaignIds = await getCampaigns();
-          const campaignData = await Promise.all(campaignIds.map(id => getCampaign(id)));
-          setCampaigns(campaignData);
-        } else {
-          console.error("Web3 provider or contract not initialized");
-        }
-      } catch (error) {
-        console.error("Error fetching campaigns:", error);
-      }
-    };
-
-    fetchCampaigns();
-  }, [account]);
 
   const handleRefund = async (campaignId) => {
     try {
@@ -87,15 +64,8 @@ const HomePage = ({ account, isCreateCampaignOpen, setIsCreateCampaignOpen }) =>
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroSection scrollToCampaigns={scrollToCampaigns} />
-      <div ref={campaignsRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-          Campañas Activas
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {campaigns.map((campaign) => (
-            <CampaignCard key={campaign.id} campaign={campaign} openModal={openModal} />
-          ))}
-        </div>
+      <div ref={campaignsRef}>
+        <CampaignList account={account} openModal={openModal} />
       </div>
       <HowItWorks />
 
