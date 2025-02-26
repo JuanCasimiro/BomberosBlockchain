@@ -7,7 +7,7 @@ const Navigation = ({ connectWallet, account, isMenuOpen, setIsMenuOpen, openCre
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between h-16">
         <div className="flex items-center">
-          <span className="text-white text-xl font-bold">IncendiAR</span>
+          <Link to="/" className="text-white text-xl font-bold">IncendiAR</Link>
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-8 ml-8">
             <Link to="/" className="text-white hover:text-blue-500">Home</Link>
@@ -15,7 +15,7 @@ const Navigation = ({ connectWallet, account, isMenuOpen, setIsMenuOpen, openCre
             <Link to="/equipo" className="text-white hover:text-blue-500">Equipo</Link>
           </div>
         </div>
-        <div className="flex items-center space-x-8">
+        <div className="hidden md:flex items-center space-x-8">
           <button
             onClick={openCreateCampaign}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
@@ -43,6 +43,9 @@ const Navigation = ({ connectWallet, account, isMenuOpen, setIsMenuOpen, openCre
     {/* Mobile Navigation Links */}
     {isMenuOpen && (
       <div className="md:hidden bg-gray-900 p-4 space-y-4">
+        <Link to="/" className="block text-white hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Home</Link>
+        <Link to="/incendios" className="block text-white hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Incendios</Link>
+        <Link to="/equipo" className="block text-white hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Equipo</Link>
         <button
           onClick={openCreateCampaign}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"

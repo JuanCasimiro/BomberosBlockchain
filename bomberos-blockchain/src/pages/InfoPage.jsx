@@ -1,47 +1,104 @@
-import React from 'react';
+import React from "react";
+import { FaFire, FaHome, FaDove } from "react-icons/fa";
+import { motion } from "framer-motion";
+import HeroSection from "../components/HeroSection";
 
-function LandingPage() {
+const InformativePage = () => {
+  const stats = [
+    { icon: <FaFire />, value: "150.000", label: "Hectáreas Quemadas", color: "text-red-500" },
+    { icon: <FaHome />, value: "5.000", label: "Familias Afectadas", color: "text-orange-500" },
+    { icon: <FaDove />, value: "200+", label: "Especies en Riesgo", color: "text-amber-500" }
+  ];
+
+  const testimonials = [
+    {
+      id: 1,
+      name: "María Rodríguez",
+      text: "Los incendios forestales nos quitaron todo. Necesitamos actuar para preservar nuestro futuro."
+    },
+    {
+      id: 2,
+      name: "Pablo Sánchez",
+      text: "Hemos vivido aquí por generaciones. Ahora debemos proteger lo que queda."
+    }
+  ];
+
   return (
-    <div>
-      <h1>Proyecto Web3 para Incendios Forestales en la Patagonia</h1>
-      
-      <section>
-        <h2>Información y Contexto</h2>
-        <p>
-          Los incendios forestales en el sur de Argentina han tenido un impacto significativo en las provincias de Río Negro y Neuquén.
-        </p>
-        <ul>
-          <li><strong>Área Afectada:</strong> Más de 15,000 hectáreas de bosques nativos (a partir del 11 de febrero de 2025).</li>
-          <li><strong>Víctimas:</strong> 1 víctima fatal (Ángel Reyes, 84 años) y 120 viviendas destruidas, afectando a más de 500 familias, especialmente en El Bolsón.</li>
-          <li><strong>Impacto en la Fauna:</strong> Especies como capibaras, lobos de río, yacarés y ciervos han sufrido pérdidas significativas.</li>
-        </ul>
-        <p><em>Fuente: ELPAIS.COM, ES.WIKIPEDIA.ORG</em></p>
-      </section>
-      
-      <section>
-        <h2>Whitepaper</h2>
-        <p>
-          <strong>Introducción:</strong> Este proyecto surge ante la alarmante situación de incendios en la Patagonia y busca recaudar fondos de manera transparente mediante tecnología blockchain.
-        </p>
-        <p>
-          <strong>Solución Propuesta:</strong> Utilizamos smart contracts para distribuir los fondos de manera transparente. Cada donación genera automáticamente un NFT como comprobante, y si no se alcanza la meta, los donantes podrán reclamar su aporte o dejarlo para seguir apoyando la causa.
-        </p>
-        <p>
-          <strong>Funcionamiento Técnico:</strong> Las campañas sólo pueden ser creadas por wallets en whitelist (estaciones de bomberos y ONG de las zonas damnificadas). La transparencia se garantiza a través de auditorías en tiempo real en la blockchain.
-        </p>
-      </section>
-      
-      <section>
-        <h2>Roadmap y Noticias</h2>
-        <ul>
-          <li><strong>Fase 1:</strong> Desarrollo e integración del smart contract y la plataforma de donaciones.</li>
-          <li><strong>Fase 2:</strong> Implementación del sistema de minting de NFTs y pruebas de auditoría.</li>
-          <li><strong>Fase 3:</strong> Lanzamiento oficial y monitoreo de la campaña.</li>
-          <li><strong>Fase 4:</strong> Actualizaciones periódicas a través de redes sociales y la incorporación de una página de noticias.</li>
-        </ul>
-      </section>
+    <div className="min-h-screen bg-gray-50">
+      <HeroSection />
+
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-gray-900">Impacto de los Incendios Forestales</h2>
+          <p className="text-lg text-gray-600 mt-4">
+            Los incendios forestales han tenido un impacto devastador en nuestra región. Aquí hay algunas estadísticas clave que muestran la magnitud del problema.
+          </p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          {stats.map((stat, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="bg-white p-8 rounded-xl shadow-lg text-center"
+            >
+              <div className={`text-4xl mb-4 ${stat.color} flex justify-center`}>{stat.icon}</div>
+              <h3 className="text-3xl font-bold mb-2">{stat.value}</h3>
+              <p className="text-gray-600">{stat.label}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12">La Situación Actual</h2>
+          <div className="max-w-4xl mx-auto text-lg text-gray-700 space-y-6">
+            <p>Los incendios forestales en la Patagonia representan una de las mayores crisis ambientales de nuestra región. La destrucción de estos ecosistemas únicos amenaza la biodiversidad y el futuro de numerosas comunidades locales.</p>
+            <p>La situación se ha agravado en los últimos años debido a:</p>
+            <ul className="list-disc pl-6 space-y-3">
+              <li>El cambio climático y las sequías prolongadas que han creado condiciones perfectas para la propagación de incendios</li>
+              <li>La pérdida de más de 150.000 hectáreas de bosque nativo en el último año</li>
+              <li>La destrucción del hábitat de especies endémicas, algunas en peligro de extinción</li>
+              <li>El impacto en la calidad del aire y la salud de las comunidades cercanas</li>
+            </ul>
+            <p className="mt-6">Las consecuencias a largo plazo incluyen:</p>
+            <ul className="list-disc pl-6 space-y-3">
+              <li>Erosión del suelo y pérdida de fertilidad en las zonas afectadas</li>
+              <li>Alteración de los ciclos naturales del agua y los patrones de lluvia</li>
+              <li>Impacto en la economía local, especialmente en el turismo y la agricultura</li>
+              <li>Pérdida de servicios ecosistémicos fundamentales para la región</li>
+            </ul>
+            <p className="mt-6">Es fundamental implementar medidas preventivas y desarrollar planes de restauración para las áreas afectadas.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-16">
+        <h2 className="text-4xl font-bold text-center mb-12">Testimonios de la Comunidad</h2>
+        <div className="grid md:grid-cols-2 gap-8">
+          {testimonials.map((testimonial) => (
+            <motion.div
+              key={testimonial.id}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              className="bg-white rounded-xl overflow-hidden shadow-lg p-8"
+            >
+              <p className="text-gray-600 italic mb-4 text-lg">"{testimonial.text}"</p>
+              <p className="font-semibold text-gray-800">{testimonial.name}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-red-600 text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-8">Juntos Podemos Hacer la Diferencia</h2>
+          <p className="text-xl mb-8">Infórmate, comparte y concientiza sobre esta problemática ambiental.</p>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
-export default LandingPage;
+export default InformativePage;

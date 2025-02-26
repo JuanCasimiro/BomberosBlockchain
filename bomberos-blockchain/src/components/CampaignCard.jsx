@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaEthereum } from 'react-icons/fa';
+import { imageMapping } from '../utils/imageMapping';
 
 const CampaignCard = ({ campaign, openModal }) => {
   // Convertir campaign.deadline a número
@@ -16,10 +17,13 @@ const CampaignCard = ({ campaign, openModal }) => {
   // Si el tiempo ya pasó, mostrar "Finalizado"
   const isExpired = timeRemaining <= 0;
 
+  // Obtener la URL de la imagen correspondiente al ID de la campaña
+  const imageUrl = imageMapping[campaign.id] || "https://via.placeholder.com/400x300?text=No+Image+Available";
+
   return (
     <div className="bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl">
       <img
-        src={campaign.imageUrl} // Usar la imagen asociada a la campaña
+        src={imageUrl} // Usar la imagen asociada a la campaña o la imagen predeterminada
         alt={campaign.title}
         className="w-full h-48 object-cover"
       />
