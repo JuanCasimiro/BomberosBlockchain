@@ -14,35 +14,6 @@ const HomePage = ({ isCreateCampaignOpen, setIsCreateCampaignOpen }) => {
   const [donationAmount, setDonationAmount] = useState("");
   const [selectedCampaign, setSelectedCampaign] = useState(null); // New state for create campaign panel
 
-  const campaignDataHardcode = [
-    {
-      title: "Estación 23 - Centro",
-      description: "Actualización de equipamiento esencial",
-      goal: 25,
-      fundsRaised: 15,
-      deadline: 1678000000, // Usar una fecha en formato UNIX
-      withdrawn: false,
-      image: "https://images.unsplash.com/photo-1599171571332-3de25555105e" // Imagen de ejemplo
-    },
-    {
-      title: "Estación 45 - Riverside",
-      description: "Financiamiento para nuevo vehículo de rescate",
-      goal: 40,
-      fundsRaised: 28,
-      deadline: 1733100800,
-      withdrawn: false,
-      image: "https://images.unsplash.com/photo-1563604437105-d5b760c8a1dd"
-    },
-    {
-      title: "Estación 12 - Highland",
-      description: "Equipo de respuesta a emergencias",
-      goal: 30,
-      fundsRaised: 20,
-      deadline: 1750100800,
-      withdrawn: false,
-      image: "https://images.unsplash.com/photo-1617973097554-506592450d3e"
-    }
-  ];  
 
   useEffect(() => {
     const fetchCampaigns = async () => {
