@@ -1,5 +1,5 @@
 import React from "react";
-import { FaFire, FaHome, FaDove } from "react-icons/fa";
+import { FaFire, FaHome, FaDove, FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const TeamPage = () => {
@@ -11,14 +11,15 @@ const TeamPage = () => {
 
   const team = [
     {
-      id: 1,
-      name: "Juan Ignacio Casimiro",
-      role: "Desarrollador Principal",
-      description: "Desarrollado por Juan Ignacio Casimiro como parte de su portfolio Web3. Actualmente soy el único desarrollador en el proyecto y se aceptan colaboraciones.",
-      email: "juanignaciocasimiro@gmail.com",
-      github: "JuanCasimiro",
-      linkedin: "Juan Ignacio Casimiro"
+      "id": 1,
+      "name": "Juan Ignacio Casimiro",
+      "role": "Desarrollador Blockchain | Innovador Web3",
+      "description": "Soy desarrollador con experiencia en Web2 y actualmente estudiando desarrollo blockchain. Este proyecto de crowdfunding en blockchain es un test para mi portfolio, diseñado para demostrar cómo la tecnología puede aplicarse a causas reales como el apoyo a bomberos en incendios forestales. Abierto a conectar y siempre interesado en intercambiar ideas y conectar con quienes comparten la visión de construir con tecnología y soluciones de impacto.",
+      "email": "juanignaciocasimiro@gmail.com",
+      "github": "https://github.com/JuanCasimiro",
+      "linkedin": "https://www.linkedin.com/in/juan-ignacio-casimiro/"
     }
+    
   ];
 
   const collaborators = [
@@ -62,9 +63,21 @@ const TeamPage = () => {
               <h3 className="text-3xl font-bold mb-2">{member.name}</h3>
               <p className="text-gray-600 mb-4">{member.role}</p>
               <p className="text-gray-600 mb-4">{member.description}</p>
-              <p className="text-gray-600 mb-4">Email: {member.email}</p>
-              <p className="text-gray-600 mb-4">GitHub: {member.github}</p>
-              <p className="text-gray-600 mb-4">LinkedIn: {member.linkedin}</p>
+              <p className="text-gray-600 mb-4 flex items-center">
+                <FaEnvelope className="mr-2" /> {member.email}
+              </p>
+              <p className="text-gray-600 mb-4 flex items-center">
+                <FaGithub className="mr-2" />
+                <a href={member.github} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                  {member.github}
+                </a>
+              </p>
+              <p className="text-gray-600 mb-4 flex items-center">
+                <FaLinkedin className="mr-2" />
+                <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                  {member.linkedin}
+                </a>
+              </p>
             </motion.div>
           ))}
           {collaborators.map((collaborator) => (
