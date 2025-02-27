@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import HomePage from './pages/BomberosPage';
 import InfoPage from './pages/InfoPage';
 import TeamPage from './pages/TeamPage';
-import NFTPage from './pages/NFTPage'; // Importa la nueva página de NFTs
+import NFTPage from './pages/NFTpage'; // Importa la nueva página de NFTs
 import Navigation from './components/Navigation';
 import NotFound from './pages/NotFound'; // Asegúrate de tener este componente
 import { requestAccount, onAccountChange } from "./utils/contractServices";
