@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const CreateCampaignPanel = ({ createCampaign }) => {
+const CreateCampaignModal = ({ createCampaign, closeCreateCampaign }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [goal, setGoal] = useState("");
@@ -14,7 +14,7 @@ const CreateCampaignPanel = ({ createCampaign }) => {
     setMessage(null);
 
     try {
-      console.log(title + description + goal +  duration);
+      console.log(title + description + goal + duration);
       const success = await createCampaign(title, description, goal, duration);
       if (success) {
         setMessage("✅ Campaña creada con éxito!");
@@ -33,51 +33,59 @@ const CreateCampaignPanel = ({ createCampaign }) => {
   };
 
   return (
-    <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">Crear Nueva Campaña</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Título"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-2 mb-2 border rounded"
-          required
-        />
-        <textarea
-          placeholder="Descripción"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-2 mb-2 border rounded"
-          required
-        ></textarea>
-        <input
-          type="number"
-          placeholder="Meta en ETH"
-          value={goal}
-          onChange={(e) => setGoal(e.target.value)}
-          className="w-full p-2 mb-2 border rounded"
-          required
-        />
-        <input
-          type="number"
-          placeholder="Duración en días"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          className="w-full p-2 mb-2 border rounded"
-          required
-        />
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 className="text-xl font-bold mb-4">Crear Nueva Campaña</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Título"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-2 mb-2 border rounded"
+            required
+          />
+          <textarea
+            placeholder="Descripción"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-2 mb-2 border rounded"
+            required
+          ></textarea>
+          <input
+            type="number"
+            placeholder="Meta en ETH"
+            value={goal}
+            onChange={(e) => setGoal(e.target.value)}
+            className="w-full p-2 mb-2 border rounded"
+            required
+          />
+          <input
+            type="number"
+            placeholder="Duración en días"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+            className="w-full p-2 mb-2 border rounded"
+            required
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+            disabled={loading}
+          >
+            {loading ? "Creando..." : "Crear Campaña"}
+          </button>
+        </form>
+        {message && <p className="mt-4 text-center">{message}</p>}
         <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-          disabled={loading}
+          onClick={closeCreateCampaign}
+          className="w-full bg-gray-300 hover:bg-gray-400 text-black py-2 rounded-lg mt-4"
         >
-          {loading ? "Creando..." : "Crear Campaña"}
+          Cerrar
         </button>
-      </form>
-      {message && <p className="mt-4 text-center">{message}</p>}
+      </div>
     </div>
   );
 };
 
-export default CreateCampaignPanel;
+export default CreateCampaignModal;
