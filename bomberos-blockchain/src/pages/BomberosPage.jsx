@@ -1,11 +1,17 @@
 import React, { useState, useRef } from "react";
 import { FaWallet, FaFireExtinguisher, FaHandHoldingHeart } from "react-icons/fa";
+import { toast } from 'react-toastify';
 import CampaignList from "../components/CampaignList";
 import { contribute, refund, createCampaign } from "../utils/contractServices";
 import HeroSection from "../components/HeroSection";
 import HowItWorks from "../components/HowItWorks";
 import DonationModal from "../components/DonationModal";
 import CreateCampaignModal from "../components/CreateCampaignModal";
+
+//TODO
+// nfts por donacion
+//hacer que las opciones de creadores solo aparezcan para ellos
+//tests
 
 const HomePage = ({ account, isCreateCampaignOpen, setIsCreateCampaignOpen }) => {
   const campaignsRef = useRef(null);
@@ -17,29 +23,31 @@ const HomePage = ({ account, isCreateCampaignOpen, setIsCreateCampaignOpen }) =>
     try {
       const success = await refund(campaignId);
       if (success) {
-        alert("Reembolso solicitado con éxito");
+        toast.success("Reembolso solicitado con éxito");
       } else {
-        alert("Error en la solicitud de reembolso");
+        toast.error("Error en la solicitud de reembolso");
       }
     } catch (error) {
       console.error("Error en la solicitud de reembolso:", error);
+      toast.error("Error en la solicitud de reembolso");
     }
   };
 
   const handleContribute = async (campaignId, amount) => {
     if (!amount || isNaN(amount) || amount <= 0) {
-      alert("Ingresa una cantidad válida de ETH");
+      toast.error("Ingresa una cantidad válida de ETH");
       return;
     }
     try {
       const success = await contribute(campaignId, amount);
       if (success) {
-        alert("Contribución realizada con éxito");
+        toast.success("Contribución realizada con éxito");
       } else {
-        alert("Error en la contribución");
+        toast.error("Error en la contribución");
       }
     } catch (error) {
       console.error("Error en la contribución:", error);
+      toast.error("Error en la contribución");
     }
   };
 

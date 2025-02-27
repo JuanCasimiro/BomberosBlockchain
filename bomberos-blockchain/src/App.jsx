@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import HomePage from './pages/BomberosPage';
 import InfoPage from './pages/InfoPage';
 import TeamPage from './pages/TeamPage';
+import NFTPage from './pages/NFTPage'; // Importa la nueva página de NFTs
 import Navigation from './components/Navigation';
 import NotFound from './pages/NotFound'; // Asegúrate de tener este componente
 import { requestAccount, onAccountChange } from "./utils/contractServices";
@@ -18,6 +21,7 @@ function App() {
       setAccount(account);
     } catch (error) {
       console.error("Failed to connect wallet:", error);
+      toast.error("Failed to connect wallet");
     }
   };
 
@@ -34,6 +38,7 @@ function App() {
         }
       } catch (error) {
         console.error("Failed to check account:", error);
+        toast.error("Failed to check account");
       }
     };
 
@@ -76,8 +81,10 @@ function App() {
         />
         <Route path="/incendios" element={<InfoPage />} />
         <Route path="/equipo" element={<TeamPage />} />
+        <Route path="/nfts" element={<NFTPage account={account} />} /> {/* Nueva ruta para la página de NFTs */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <ToastContainer />
     </Router>
   );
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import { FaEthereum } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import { imageMapping } from '../utils/imageMapping';
+import { withdrawFunds, refund } from '../utils/contractServices';
 
 const CampaignCard = ({ campaign, openModal }) => {
   // Convertir campaign.deadline a número
@@ -17,8 +19,41 @@ const CampaignCard = ({ campaign, openModal }) => {
   // Si el tiempo ya pasó, mostrar "Finalizado"
   const isExpired = timeRemaining <= 0;
 
+  // Verificar si se cumplió el objetivo de la campaña
+  const goalReached = parseFloat(campaign.fundsRaised) >= parseFloat(campaign.goal);
+
   // Obtener la URL de la imagen correspondiente al ID de la campaña
   const imageUrl = imageMapping[campaign.id] || "https://via.placeholder.com/400x300?text=No+Image+Available";
+
+  // Función para manejar la retirada de fondos
+  const handleWithdrawFunds = async () => {
+    try {
+      const result = await refund(campaign.id);
+      if (result.success) {
+        toast.success("Fondos retirados con éxito");
+      } else {
+        toast.error(`Error al retirar fondos: ${result.error.reason}`);
+      }
+    } catch (error) {
+      console.error("Error al retirar fondos:", error);
+      toast.error(`Error al retirar fondos: ${error.message}`);
+    }
+  };
+
+  // Función para manejar el reembolso de fondos
+  const handleRefund = async () => {
+    try {
+      const result = await refund(campaign.id);
+      if (result.success) {
+        toast.success("Reembolso solicitado con éxito");
+      } else {
+        toast.error(`Error al solicitar el reembolso: ${result.error.reason}`);
+      }
+    } catch (error) {
+      
+      toast.error(`Error al solicitar el reembolso: ${error}`);
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-xl overflow-hidden transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl">
@@ -61,6 +96,26 @@ const CampaignCard = ({ campaign, openModal }) => {
         >
           <FaEthereum className="mr-2" /> Donar Ahora
         </button>
+
+        {/* Mostrar el botón de "Withdraw" solo si se cumplió el objetivo */}
+        {(goalReached && isExpired) || campaign.id == 1 && (
+          <button
+            onClick={handleWithdrawFunds}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center mt-4"
+          >
+            Retirar Fondos(Solo Autorizados)
+          </button>
+        )}
+
+        {/* Mostrar el botón de "Reclamar Fondos" solo si no se cumplió el objetivo */}
+        {(!goalReached && isExpired) || campaign.id == 4 && (
+          <button
+            onClick={handleRefund}
+            className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center mt-4"
+          >
+            Reclamar Fondos
+          </button>
+        )}
       </div>
     </div>
   );

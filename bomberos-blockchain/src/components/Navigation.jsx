@@ -1,9 +1,38 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBars, FaTimes } from 'react-icons/fa';
-import { onAccountChange } from '../utils/contractServices';
+import { FaBars, FaTimes, FaUserCircle } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import { onAccountChange, addToWhitelist } from '../utils/contractServices';
 
 const Navigation = ({ connectWallet, account, isMenuOpen, setIsMenuOpen, openCreateCampaign }) => {
+  const [isWhitelistModalOpen, setIsWhitelistModalOpen] = useState(false);
+  const [whitelistAddress, setWhitelistAddress] = useState("");
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  const adminMenuRef = useRef(null);
+
+  const handleAddToWhitelist = async () => {
+    const success = await addToWhitelist(whitelistAddress);
+    if (success) {
+      toast.success("Dirección añadida a la whitelist con éxito");
+      setWhitelistAddress("");
+      setIsWhitelistModalOpen(false);
+    } else {
+      toast.error("Error al añadir la dirección a la whitelist");
+    }
+  };
+
+  const handleClickOutside = (event) => {
+    if (adminMenuRef.current && !adminMenuRef.current.contains(event.target)) {
+      setIsAdminMenuOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="bg-gray-900 fixed w-full z-50 top-0 shadow-md">
@@ -19,15 +48,33 @@ const Navigation = ({ connectWallet, account, isMenuOpen, setIsMenuOpen, openCre
             </div>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <button
-              onClick={openCreateCampaign}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-            >
-              Crear Campaña
-            </button>
+            <div className="relative" ref={adminMenuRef}>
+              <button
+                onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+                className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center"
+              >
+                <FaUserCircle className="mr-2" /> Admin
+              </button>
+              {isAdminMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
+                  <button
+                    onClick={openCreateCampaign}
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200"
+                  >
+                    Crear Campaña
+                  </button>
+                  <button
+                    onClick={() => setIsWhitelistModalOpen(true)}
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200"
+                  >
+                    Añadir a Whitelist
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               onClick={connectWallet}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center"
+              className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center"
             >
               {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : "Conectar Billetera"}
             </button>
@@ -49,18 +96,67 @@ const Navigation = ({ connectWallet, account, isMenuOpen, setIsMenuOpen, openCre
           <Link to="/" className="block text-white hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Home</Link>
           <Link to="/incendios" className="block text-white hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Incendios</Link>
           <Link to="/equipo" className="block text-white hover:text-blue-500" onClick={() => setIsMenuOpen(false)}>Equipo</Link>
-          <button
-            onClick={openCreateCampaign}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-          >
-            Crear Campaña
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+              className="w-full bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center justify-center"
+            >
+              <FaUserCircle className="mr-2" /> Admin
+            </button>
+            {isAdminMenuOpen && (
+              <div className="mt-2 w-full bg-white rounded-lg shadow-lg py-2">
+                <button
+                  onClick={openCreateCampaign}
+                  className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200"
+                >
+                  Crear Campaña
+                </button>
+                <button
+                  onClick={() => setIsWhitelistModalOpen(true)}
+                  className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200"
+                >
+                  Añadir a Whitelist
+                </button>
+              </div>
+            )}
+          </div>
           <button
             onClick={connectWallet}
-            className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center justify-center"
+            className="w-full bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center justify-center"
           >
             {account ? `${account.slice(0, 6)}...${account.slice(-4)}` : "Conectar Billetera"}
           </button>
+        </div>
+      )}
+
+      {/* Whitelist Modal */}
+      {isWhitelistModalOpen && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Añadir a Whitelist</h2>
+            <input
+              type="text"
+              placeholder="Dirección de Ethereum"
+              value={whitelistAddress}
+              onChange={(e) => setWhitelistAddress(e.target.value)}
+              className="w-full p-2 mb-2 border rounded"
+              required
+            />
+            <div className="flex justify-between">
+              <button
+                onClick={handleAddToWhitelist}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
+              >
+                Añadir
+              </button>
+              <button
+                onClick={() => setIsWhitelistModalOpen(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-lg"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </nav>

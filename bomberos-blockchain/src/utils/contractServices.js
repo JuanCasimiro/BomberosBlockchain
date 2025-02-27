@@ -97,10 +97,9 @@ export const withdrawFunds = async (campaignId) => {
   try {
     const tx = await contract.withdrawFunds(campaignId);
     await tx.wait();
-    return true;
+    return { success: true };
   } catch (error) {
-    console.error("Error withdrawing funds:", error.message);
-    return false;
+    return { success: false, error: error }
   }
 };
 
@@ -108,17 +107,26 @@ export const refund = async (campaignId) => {
   try {
     const tx = await contract.refund(campaignId);
     await tx.wait();
-    return true;
+    return { success: true };
   } catch (error) {
-    console.error("Error requesting refund:", error.message);
-    return false;
+
+    return { success: false, error: error };
   }
 };
 
-export const getMintedTokens = async () => {
+export const getMintedTokens = async (account) => {
   try {
-    const mintedTokens = await contract.getMintedTokens();
-    return mintedTokens;
+    const tokenIds = await contract.getMintedTokens(account);
+    const tokens = await Promise.all(tokenIds.map(async (tokenId) => {
+      const tokenURI = await contract.tokenURI(tokenId);
+      const response = await fetch(tokenURI);
+      const metadata = await response.json();
+      return {
+        id: tokenId,
+        ...metadata,
+      };
+    }));
+    return tokens;
   } catch (error) {
     console.error("Error getting minted tokens:", error.message);
     return [];
@@ -129,5 +137,17 @@ export const getMintedTokens = async () => {
 export const onAccountChange = (callback) => {
   if (window.ethereum) {
     window.ethereum.on('accountsChanged', callback);
+  }
+};
+
+// Nueva función para agregar a la whitelist
+export const addToWhitelist = async (address) => {
+  try {
+    const tx = await contract.setWhitelist(address, true);
+    await tx.wait();
+    return true;
+  } catch (error) {
+    console.error("Error adding to whitelist:", error.message);
+    return false;
   }
 };
