@@ -54,6 +54,7 @@ export const initialize = async () => {
 
 // Llamar a `initialize` y esperar a que termine antes de continuar
 initialize().then(() => {
+  switchToSepolia();
   console.log("Web3 inicializado correctamente");
 });
 
@@ -115,6 +116,7 @@ export const getCampaign = async (campaignId) => {
 
 export const getCampaigns = async () => {
   try {
+    await checkNUpdateNetwork();
     await checkNUpdateNetwork();
     const campaignIds = Array.from(await contract.getCampaigns()); // Llamada a la función del contrato
     return campaignIds;
