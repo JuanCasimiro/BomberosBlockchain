@@ -6,9 +6,41 @@ let provider;
 let signer;
 let contract;
 
+const switchToSepolia = async () => {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0xaa36a7' }], // '0xaa36a7' es el valor hexadecimal de 11155111
+    });
+  } catch (error) {
+    // Si la red no está añadida, puedes intentar agregarla con wallet_addEthereumChain
+    if (error.code === 4902) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0xaa36a7',
+            chainName: 'Sepolia Test Network',
+            rpcUrls: ['https://sepolia.infura.io/v3/TU_INFURA_PROJECT_ID'],
+            nativeCurrency: {
+              name: 'Sepolia ETH',
+              symbol: 'ETH',
+              decimals: 18,
+            },
+            blockExplorerUrls: ['https://sepolia.etherscan.io']
+          }],
+        });
+      } catch (addError) {
+        console.error(addError);
+      }
+    }
+  }
+};
+
 export const initialize = async () => {
   if (typeof window.ethereum !== "undefined") {
     provider = new BrowserProvider(window.ethereum);
+    await switchToSepolia();
     signer = await provider.getSigner();
     contract = new Contract(CONTRACT_ADDRESS, Firefighter_ABI, signer);
 
@@ -64,7 +96,6 @@ export const contribute = async (campaignId, amount) => {
 export const getCampaign = async (campaignId) => {
   try {
     const campaign = await contract.getCampaign(campaignId);
-    console.log("Campaign:", campaign);
 
     return {
       id: campaign[0],
@@ -84,8 +115,8 @@ export const getCampaign = async (campaignId) => {
 
 export const getCampaigns = async () => {
   try {
+    await checkNUpdateNetwork();
     const campaignIds = Array.from(await contract.getCampaigns()); // Llamada a la función del contrato
-    console.log("Campaigns:", campaignIds);
     return campaignIds;
   } catch (error) {
     console.error("Error getting campaigns:", error.message);
@@ -109,10 +140,22 @@ export const refund = async (campaignId) => {
     await tx.wait();
     return { success: true };
   } catch (error) {
-
     return { success: false, error: error };
   }
 };
+
+export const checkNUpdateNetwork = async () => {
+  const network = await provider.getNetwork();
+  if (network.chainId !== 11155111n) {
+    console.error("No estás conectado a la red Sepolia");
+    switchToSepolia();
+    // Aquí podrías mostrar un mensaje o incluso solicitar al usuario cambiar de red
+  } else {
+    console.log("Conectado a la red Sepolia");
+  }
+};
+
+// Llama a checkNetwork, por ejemplo, en un useEffect en React:
 
 export const getMintedTokens = async (account) => {
   try {
